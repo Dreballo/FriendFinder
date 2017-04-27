@@ -18,50 +18,50 @@ module.exports = function(app) {
 
     // Create new Friends- takes in JSON input
     app.post("/api/friends", function(req, res) {
-        var newFriend = req.body;
-
         //logic for compatibility to find best match
 
-        //getting total score from new Friend Array
-        var myScore = newFriend.scores.reduce(getSum);
-
         //empty array to push matched friend
-        var bestFriend = [];
-        console.log("My total is: " + myScore);
+        var bestFriend =
+            {
+                name: "",
+                photo: "",
+                friendDifference: 1000
 
+            }
+        ;
+
+        var userData = req.body;
+        var userScores = userData.scores;
+
+        var totalDifference = 0;
          //loop through friends object an compare
         for(var i = 0; i < friends.length; i++){
 
-            //getting total score from friends
-            var compare = friends[i].scores.reduce(getSum);
-            //console.log(compare);
-            var difference = Math.abs(compare - myScore);
-            console.log("the difference is: " + difference);
-            if(difference <= 5){
-                bestFriend = friends[i];
-                console.log("my new best friend is: " + bestFriend.name);
+            totalDifference = 0;
 
-            } else{
-                //bestFriend = newFriend
-                console.log("You are unmatchable");
+            //inner loop through the scores of each friend
+            for (var j = 0; j < friends[i].scores[j];j++){
+                //calculating the difference between each score and sum them into totalDifference
+                totalDifference +=Math.abs(parseInt(userScores[j]) - parseInt(friends[i].scores[j]));
+
+                //conditional statement to define best friend match
+                if(totalDifference <= bestFriend.friendDifference){
+
+                    bestFriend.name = friends[i].name;
+                    bestFriend.photo = friends[i].photo;
+                    bestFriend.friendDifference = totalDifference;
+
+                }
+
             }
 
         }
 
-
-
-
         //Pushing new friend to friends API
-        friends.push(newFriend);
+        friends.push(userData);
 
         res.json(bestFriend);
-    })
-
+    });
 
 }
-
-//function to pass through reduce() to add up find value of an array
-function getSum (a,b){
-    return parseInt(a) + parseInt(b);
-};
 
